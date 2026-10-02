@@ -58,6 +58,47 @@ class SessionManager {
     return Session.fromJson(response);
   }
 
+  /// Swap the customer (party B) on an active session.
+  ///
+  /// The proxy number does not change, so the agent keeps dialling the same
+  /// number and each call connects to whoever the current target is. Use this
+  /// for sequential calls instead of creating a session per recipient: ten
+  /// sessions means ten numbers and ten cooldowns, which exhausts a small pool
+  /// partway through a round.
+  ///
+  /// The previous customer can no longer reach the proxy after a swap.
+  ///
+  /// ```dart
+  /// // Courier has three drops
+  /// final session = await Relavoi.instance.sessions.create(
+  ///   agentPhone: courierPhone,
+  ///   customerPhone: customers[0].phone,
+  /// );
+  ///
+  /// await Relavoi.instance.sessions.initiateCall(session.proxyNumber);
+  ///
+  /// // Move to the next drop, same proxy number
+  /// await Relavoi.instance.sessions.swapTarget(
+  ///   session.id,
+  ///   customerPhone: customers[1].phone,
+  /// );
+  ///
+  /// await Relavoi.instance.sessions.initiateCall(session.proxyNumber);
+  /// ```
+  ///
+  /// Throws if [customerPhone] is not E.164, matches the agent's own number,
+  /// or already participates in another live session on the same proxy.
+  /// Swapping to the current target is a no-op and returns the session as-is.
+  Future<Session> swapTarget(String sessionId,
+      {required String customerPhone}) async {
+    PhoneUtils.validateE164(customerPhone);
+    final response = await _client.patch('/sessions/$sessionId/target', data: {
+      'customerPhone': customerPhone,
+    });
+    RelavoiLogger.info('Session target swapped: $sessionId');
+    return Session.fromJson(response);
+  }
+
   /// End an active session.
   Future<void> end(String sessionId) async {
     await _client.post('/sessions/$sessionId/end');

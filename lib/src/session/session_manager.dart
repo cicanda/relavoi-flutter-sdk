@@ -28,8 +28,9 @@ class SessionManager {
     DirectionMode directionMode = DirectionMode.bidirectional,
     bool recordingEnabled = false,
   }) async {
-    PhoneUtils.validateE164(agentPhone);
-    PhoneUtils.validateE164(customerPhone);
+    final agent = PhoneUtils.requireNumberShaped(agentPhone, 'agentPhone');
+    final customer =
+        PhoneUtils.requireNumberShaped(customerPhone, 'customerPhone');
 
     final directionString = {
       DirectionMode.bidirectional: 'BIDIRECTIONAL',
@@ -38,8 +39,8 @@ class SessionManager {
     }[directionMode]!;
 
     final response = await _client.post('/sessions', data: {
-      'agentPhone': agentPhone,
-      'customerPhone': customerPhone,
+      'agentPhone': agent,
+      'customerPhone': customer,
       'metadata': metadata ?? {},
       'gracePeriodMinutes': gracePeriodMinutes,
       'directionMode': directionString,
@@ -47,8 +48,9 @@ class SessionManager {
     });
 
     final session = Session.fromJson(response);
-    RelavoiLogger.info(
-        'Session created: ${session.id}, proxy: ${session.proxyNumber}');
+    // The session id only. The proxy number was logged here in plaintext, and
+    // the id is the key that actually correlates lines.
+    RelavoiLogger.info('Session created: ${session.id}');
     return session;
   }
 
@@ -86,14 +88,15 @@ class SessionManager {
   /// await Relavoi.instance.sessions.initiateCall(session.proxyNumber);
   /// ```
   ///
-  /// Throws if [customerPhone] is not E.164, matches the agent's own number,
+  /// Throws if [customerPhone] is not number-shaped, matches the agent's own number,
   /// or already participates in another live session on the same proxy.
   /// Swapping to the current target is a no-op and returns the session as-is.
   Future<Session> swapTarget(String sessionId,
       {required String customerPhone}) async {
-    PhoneUtils.validateE164(customerPhone);
+    final customer =
+        PhoneUtils.requireNumberShaped(customerPhone, 'customerPhone');
     final response = await _client.patch('/sessions/$sessionId/target', data: {
-      'customerPhone': customerPhone,
+      'customerPhone': customer,
     });
     RelavoiLogger.info('Session target swapped: $sessionId');
     return Session.fromJson(response);
@@ -124,11 +127,13 @@ class SessionManager {
   /// The user taps dial in the native dialer to place the call.
   /// The call goes through the regular phone network (PSTN).
   Future<void> initiateCall(String proxyNumber) async {
-    PhoneUtils.validateE164(proxyNumber);
-    final uri = Uri.parse('tel:$proxyNumber');
+    final canonical =
+        PhoneUtils.requireNumberShaped(proxyNumber, 'proxyNumber');
+    final uri = Uri.parse('tel:$canonical');
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
-      RelavoiLogger.info('Dialer opened with $proxyNumber');
+      // Not the number: this line used to print it in full.
+      RelavoiLogger.info('Dialer opened');
     } else {
       throw RelavoiException('Cannot open phone dialer');
     }

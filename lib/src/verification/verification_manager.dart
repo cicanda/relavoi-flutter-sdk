@@ -1,6 +1,8 @@
 import 'package:flutter/services.dart';
 import '../client/api_client.dart';
 import '../internal/logger.dart';
+import '../internal/phone_utils.dart';
+import '../relavoi_exception.dart';
 import 'verification_result.dart';
 
 class VerificationManager {
@@ -21,13 +23,22 @@ class VerificationManager {
   /// }
   /// ```
   Future<VerificationResult> verify(String userPhone) async {
+    final canonical = PhoneUtils.requireNumberShaped(userPhone, 'userPhone');
     try {
       final response = await _client.get('/sessions/verify', queryParams: {
-        'userPhone': userPhone,
+        'userPhone': canonical,
       });
       return VerificationResult.fromJson(response);
+    } on RelavoiException catch (e) {
+      // The type and the message, never the exception's own toString(). This
+      // number travels in a query string, and Dio puts the request URI into its
+      // message, so logging the raw error wrote a plaintext phone number to the
+      // console. Our own exception messages are built not to carry one.
+      RelavoiLogger.error('Verification failed: ${e.runtimeType}: ${e.message}');
+      return VerificationResult(verified: false);
     } catch (e) {
-      RelavoiLogger.error('Verification failed: $e');
+      // Anything not ours: the type only. Its message is not ours to trust.
+      RelavoiLogger.error('Verification failed: ${e.runtimeType}');
       return VerificationResult(verified: false);
     }
   }

@@ -1,6 +1,6 @@
 name: relavoi_flutter
 description: Relavoi SDK for Flutter - Privacy-preserving call and SMS masking for Nigerian businesses.
-version: 0.1.0
+version: 0.2.0
 homepage: https://relavoi.com
 repository: https://github.com/cicanda/relavoi-flutter-sdk
 documentation: https://docs.relavoi.com

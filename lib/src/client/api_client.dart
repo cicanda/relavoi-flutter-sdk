@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import '../relavoi_config.dart';
 import '../relavoi_exception.dart';
 import '../internal/logger.dart';
@@ -100,28 +101,75 @@ class ApiClient {
     }
   }
 
+  /// Visible for testing: the error mapper, which is otherwise only reachable
+  /// through a real HTTP failure.
+  @visibleForTesting
+  RelavoiException mapErrorForTest(DioException e) => _mapError(e);
+
+  /// Map a Dio failure to a typed Relavoi exception.
+  ///
+  /// Only `type` and `detail` are read out of an error response. The raw body
+  /// is never put into an exception message, and neither is Dio's own message.
+  /// That is deliberate rather than tidy: an exception message ends up printed
+  /// and in crash reporters, Dio's message embeds the request URI, and
+  /// `/sessions/verify` carries a subscriber's number in its query string. So a
+  /// failed verification used to write a plaintext phone number to the log.
   RelavoiException _mapError(DioException e) {
     final status = e.response?.statusCode;
-    final body = e.response?.data?.toString() ?? e.message ?? 'Unknown error';
+    final problem = _problem(e.response?.data);
+    final detail = problem?['detail'];
+    final slug = problem?['slug'];
+
+    if (status == 400 || status == 422) {
+      if (slug == 'number-not-supported') {
+        return NumberNotSupportedException(
+            detail ?? 'That phone number is not supported.');
+      }
+      if (slug == 'cross-border-not-supported') {
+        return CrossBorderNotSupportedException(detail ??
+            'Both numbers in a session must be from the same country.');
+      }
+      return ValidationException(detail ?? 'Validation failed.');
+    }
 
     switch (status) {
       case 401:
         return AuthenticationException('Authentication failed');
-      case 422:
-        return ValidationException('Validation error: $body');
       case 429:
-        return TierLimitException('Rate limit exceeded: $body');
+        return TierLimitException(detail ?? 'Rate limit exceeded.');
       case 503:
-        return SessionException('Service unavailable: $body', statusCode: 503);
+        return SessionException(detail ?? 'Service unavailable.',
+            statusCode: 503);
       default:
         if (e.type == DioExceptionType.connectionTimeout ||
             e.type == DioExceptionType.receiveTimeout ||
+            e.type == DioExceptionType.sendTimeout ||
             e.type == DioExceptionType.connectionError) {
-          return NetworkException('Network error: ${e.message}',
+          // Describing the type rather than repeating Dio's message, which
+          // carries the full request URI.
+          return NetworkException('Network error (${e.type.name}).',
               originalError: e);
         }
-        return RelavoiException('API error ($status): $body',
+        return RelavoiException(
+            detail ?? 'API error${status == null ? '' : ' ($status)'}.',
             statusCode: status);
     }
+  }
+
+  /// Pull the problem `type` slug and `detail` out of an error body, or null if
+  /// it is not an RFC 7807 problem document.
+  ///
+  /// The slug is the last path segment of the `type` URL, matched rather than
+  /// the whole URL so the error identity does not depend on the hostname, which
+  /// differs between environments.
+  Map<String, String?>? _problem(dynamic data) {
+    if (data is! Map) return null;
+    final type = data['type'];
+    final detail = data['detail'];
+    if (type is! String && detail is! String) return null;
+    return {
+      'slug': type is String ? type.split('/').last : null,
+      'detail': detail is String && detail.isNotEmpty ? detail : null,
+    };
   }
 }

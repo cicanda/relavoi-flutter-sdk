@@ -27,6 +27,6 @@ stream into the log view at the bottom.
 - **Android** needs `INTERNET` and `READ_PHONE_STATE` (already declared in
   `android/app/src/main/AndroidManifest.xml`). Grant `READ_PHONE_STATE` at runtime
   for call-state detection.
-- **iOS** needs no extra permissions — `CXCallObserver` works without a prompt.
+- **iOS** needs no extra permissions. `CXCallObserver` works without a prompt.
 - Push (FCM/APNs) is part of the SDK but not exercised by this harness; it needs
   Firebase configuration (`google-services.json` / `GoogleService-Info.plist`).

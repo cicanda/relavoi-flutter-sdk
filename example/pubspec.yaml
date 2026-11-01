@@ -17,6 +17,11 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # Only the sample needs this: it stands in for the backend that would hold
+  # the API secret and mint device tokens in a real integration. The SDK
+  # itself does not depend on it.
+  http: ^1.2.0
+
   relavoi_flutter:
     # When depending on this package from a real application you should use:
     #   relavoi_flutter: ^x.y.z

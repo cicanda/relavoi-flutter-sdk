@@ -2,6 +2,7 @@ library relavoi_flutter;
 
 export 'src/relavoi.dart';
 export 'src/relavoi_config.dart';
+export 'src/auth/token_provider.dart';
 export 'src/relavoi_exception.dart';
 export 'src/session/session.dart';
 export 'src/session/session_manager.dart';

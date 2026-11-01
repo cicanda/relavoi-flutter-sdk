@@ -5,30 +5,35 @@ Privacy-preserving call and SMS masking for Flutter apps. Works on both Android 
 ## Installation
 
 Add to your pubspec.yaml:
-```yaml
-dependencies:
-  relavoi_flutter: ^0.1.0
-```
+Not on pub.dev yet, so depend on the repository at a tag. `ref: main` would
+move under you; a tag will not.
 
-Or from Git (until published to pub.dev):
 ```yaml
 dependencies:
   relavoi_flutter:
     git:
       url: https://github.com/cicanda/relavoi-flutter-sdk.git
-      ref: main
+      ref: v0.3.0
 ```
 
 ## Quick Start
+
+### Where the token comes from
+
+Your backend holds the API key and secret and calls `POST /v1/auth/sdk-token`
+for one user; the app asks your backend and hands the result to the SDK. The
+secret never reaches the handset, because anything compiled into a published
+app can be read back out of it, and a live key and secret let anyone create
+sessions billed to you and list every session and call on your workspace.
 
 ```dart
 import 'package:relavoi_flutter/relavoi_flutter.dart';
 
 // Initialize once at app startup
 await Relavoi.initialize(
-  apiKey: 'rk_live_...',
-  apiSecret: 'rs_...',
   tenantId: 'your-tenant-uuid',
+  // Ask YOUR backend, which holds the API secret.
+  tokenProvider: () async => myBackend.relavoiToken(),
   config: RelavoiConfig(enableLogging: true),
 );
 

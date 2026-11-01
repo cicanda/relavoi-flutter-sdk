@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:relavoi_flutter/relavoi_flutter.dart';
 
 void main() => runApp(const RelavoiSampleApp());
@@ -69,16 +72,75 @@ class _HomePageState extends State<HomePage> {
     }
     try {
       log('Initializing (authenticating against api.relavoi.com)…');
+      // A real app ships a tokenProvider and no secret: the provider asks YOUR
+      // backend, which holds the key and secret and calls
+      // POST /v1/auth/sdk-token. This sample has no backend, so it stands in
+      // for one by minting a device token here, which is exactly the thing a
+      // shipped app must not do. The sandbox key in the field above is why it
+      // is survivable in a sample.
+      final key = _apiKey.text.trim();
+      final secret = _apiSecret.text.trim();
       await Relavoi.initialize(
-        apiKey: _apiKey.text.trim(),
-        apiSecret: _apiSecret.text.trim(),
         tenantId: _tenantId.text.trim(),
         config: const RelavoiConfig(enableLogging: true),
+        tokenProvider: () async {
+          final token = await _mintDeviceTokenStandingInForYourBackend(
+            apiKey: key,
+            apiSecret: secret,
+            userPhone: _userPhone.text.trim(),
+          );
+          return token;
+        },
       );
-      log('SDK initialized');
+      log('SDK initialized with a token provider');
     } catch (e) {
       log('ERROR initialize: $e');
     }
+  }
+
+  /// Stands in for YOUR backend.
+  ///
+  /// In a shipped app this lives on your server: it holds the API key and
+  /// secret, exchanges them for a tenant token, and calls
+  /// POST /v1/auth/sdk-token for one user. The app only ever sees the result.
+  /// Doing it in the app, as here, is what the whole token-provider design
+  /// exists to stop; this is a sample with a sandbox key.
+  Future<RelavoiToken> _mintDeviceTokenStandingInForYourBackend({
+    required String apiKey,
+    required String apiSecret,
+    required String userPhone,
+  }) async {
+    final base = Uri.parse('https://api.relavoi.com/v1');
+
+    final tokenRes = await http.post(
+      base.replace(path: '${base.path}/auth/token'),
+      headers: const {'content-type': 'application/json'},
+      body: jsonEncode({'apiKey': apiKey, 'apiSecret': apiSecret}),
+    );
+    if (tokenRes.statusCode != 200) {
+      throw StateError('auth/token failed: ${tokenRes.statusCode}');
+    }
+    final tenantToken = (jsonDecode(tokenRes.body) as Map)['accessToken'] as String;
+
+    final sdkRes = await http.post(
+      base.replace(path: '${base.path}/auth/sdk-token'),
+      headers: {
+        'content-type': 'application/json',
+        'authorization': 'Bearer $tenantToken',
+      },
+      body: jsonEncode({
+        'userPhone': userPhone,
+        'scope': ['sessions:verify', 'sessions:read', 'devices:write'],
+      }),
+    );
+    if (sdkRes.statusCode != 200) {
+      throw StateError('auth/sdk-token failed: ${sdkRes.statusCode} ${sdkRes.body}');
+    }
+    final body = jsonDecode(sdkRes.body) as Map;
+    return RelavoiToken(
+      accessToken: body['accessToken'] as String,
+      expiresInSeconds: body['expiresIn'] as int,
+    );
   }
 
   Future<void> _createSession() async {

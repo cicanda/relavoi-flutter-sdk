@@ -26,7 +26,6 @@ class SessionManager {
     Map<String, dynamic>? metadata,
     int gracePeriodMinutes = 15,
     DirectionMode directionMode = DirectionMode.bidirectional,
-    bool recordingEnabled = false,
   }) async {
     final agent = PhoneUtils.requireNumberShaped(agentPhone, 'agentPhone');
     final customer =
@@ -44,7 +43,6 @@ class SessionManager {
       'metadata': metadata ?? {},
       'gracePeriodMinutes': gracePeriodMinutes,
       'directionMode': directionString,
-      'recordingEnabled': recordingEnabled,
     });
 
     final session = Session.fromJson(response);

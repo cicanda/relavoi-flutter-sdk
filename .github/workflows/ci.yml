@@ -40,6 +40,15 @@ jobs:
       - name: Test
         run: flutter test
 
+      - name: What the toolchain changed, if anything
+        # Diagnostic. `pub publish --dry-run` refuses a dirty tree, and on the
+        # runner's Flutter two committed files come back modified after
+        # `pub get`. This prints exactly what, so the fix is the right one.
+        run: |
+          flutter --version
+          git status --porcelain
+          git --no-pager diff
+
       - name: Validate the package
         # The publish path is parked until the first integration customer, so
         # this never uploads anything. It is here because a package can be

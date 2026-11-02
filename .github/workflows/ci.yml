@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  package:
+    # This repo had no CI at all until 2 November 2026, while publishing a
+    # tagged v0.3.1 that integrators install from a git ref. Nothing checked
+    # that the package analysed, that its tests passed, or that it was a valid
+    # package at all.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          # The floor in pubspec.yaml is Flutter 3.10, and `stable` is well
+          # past it. Pinning an exact version here would hide the thing this
+          # job is for: whether the package still builds on what an integrator
+          # actually has installed.
+          cache: true
+
+      - name: Show toolchain
+        run: flutter --version
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        # flutter_lints via analysis_options.yaml. Any issue fails the build;
+        # the package is clean today, so there is nothing to grandfather.
+        run: flutter analyze
+
+      - name: Test
+        run: flutter test
+
+      - name: Validate the package
+        # The publish path is parked until the first integration customer, so
+        # this never uploads anything. It is here because a package can be
+        # unpublishable for reasons nothing else catches: a missing license, a
+        # description outside the length pub.dev wants, a dependency with no
+        # version bound. Catching that now is cheaper than finding it on the
+        # day we decide to publish.
+        run: flutter pub publish --dry-run

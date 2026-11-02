@@ -90,3 +90,9 @@ No additional permissions required. CXCallObserver works without user prompt.
 
 ## Documentation
 https://docs.relavoi.com
+
+## License
+
+Apache License 2.0. See [LICENSE](./LICENSE).
+
+Copyright 2026 CICANDA Ltd.

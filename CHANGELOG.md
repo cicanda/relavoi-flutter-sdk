@@ -1,3 +1,17 @@
+## 0.3.1
+
+### Apache License 2.0
+
+This repository is public and is what integrators read, and it shipped without
+a licence. Nobody could use it: no licence means all rights reserved, so a
+company's legal review would have stopped an integration whatever the README
+promised. The `LICENSE` file here read "TODO: Add your
+license here.", which is what `flutter create` leaves behind, and pub.dev
+reports a package with an unrecognised licence.
+
+The licence is Apache 2.0, the full text is in `LICENSE`, and the README says
+so. Nothing about the code or the API has changed in this release.
+
 ## 0.2.0
 
 ### Phone numbers: the server decides, not the SDK

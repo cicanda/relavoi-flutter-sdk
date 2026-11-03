@@ -4,14 +4,16 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'relavoi_flutter'
-  s.version          = '0.0.1'
-  s.summary          = 'A new Flutter plugin project.'
+  # Keep in step with `version:` in ../pubspec.yaml.
+  s.version          = '0.3.1'
+  s.summary          = 'Privacy-preserving call and SMS masking for Flutter apps.'
   s.description      = <<-DESC
-A new Flutter plugin project.
+The iOS side of the Relavoi Flutter plugin. Native call detection for the
+call-verification banner; everything else in the SDK is pure Dart.
                        DESC
-  s.homepage         = 'http://example.com'
-  s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Your Company' => 'email@example.com' }
+  s.homepage         = 'https://relavoi.com'
+  s.license          = { :type => 'Apache-2.0', :file => '../LICENSE' }
+  s.author           = { 'CICANDA' => 'support@relavoi.com' }
   s.source           = { :path => '.' }
   s.source_files = 'relavoi_flutter/Sources/relavoi_flutter/**/*'
   s.dependency 'Flutter'

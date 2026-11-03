@@ -13,7 +13,7 @@ dependencies:
   relavoi_flutter:
     git:
       url: https://github.com/cicanda/relavoi-flutter-sdk.git
-      ref: v0.3.1
+      ref: v0.3.2
 ```
 
 ## Quick Start
@@ -86,7 +86,18 @@ No additional permissions required. CXCallObserver works without user prompt.
 - Flutter >= 3.10
 - Dart >= 3.0
 - Android minSdkVersion 24
-- iOS 15.0+
+- iOS 13.0
+
+13.0 is what this plugin actually needs, and it is the one number the podspec,
+`ios/relavoi_flutter/Package.swift` and the documentation all state. It is set
+by Flutter itself, which requires iOS 13 and migrates older projects up to it,
+and by the three plugin dependencies that have a native side:
+`firebase_messaging`, `url_launcher_ios` and `shared_preferences_foundation`
+all declare 13.0. This plugin's own Swift needs iOS 10: it uses
+`CXCallObserver` and nothing newer.
+
+It said 15.0 until 0.3.2, which was the native iOS SDK's floor copied across.
+That SDK does require 15, and this plugin does not depend on it.
 
 ## Documentation
 https://docs.relavoi.com

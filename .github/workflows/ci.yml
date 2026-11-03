@@ -3,6 +3,8 @@ name: CI
 on:
   push:
     branches: [main, develop]
+    # Release tags run the full suite too, and gate on the version check below.
+    tags: ["v*"]
   pull_request:
     branches: [main]
 
@@ -48,3 +50,14 @@ jobs:
         # version bound. Catching that now is cheaper than finding it on the
         # day we decide to publish.
         run: flutter pub publish --dry-run
+
+  release-version:
+    # Only on a tag. Fails the release unless pubspec, the podspec, the README
+    # install ref and the newest CHANGELOG section all name the tag being cut,
+    # and unless the iOS floor reads the same in all three places that state it.
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/checkout@v4
+      - name: The tree agrees with the tag
+        run: scripts/check-release-version.sh "${GITHUB_REF_NAME}"

@@ -1,3 +1,44 @@
+## 0.3.2
+
+### One iOS floor, and it is 13.0
+
+The README and the documentation said iOS 15.0 while the podspec and
+`ios/relavoi_flutter/Package.swift` said 13.0. Three releases shipped with the
+two disagreeing, and 15.0 was the stricter claim, so anyone with an iOS 13 or
+14 deployment target was told to stay away from a plugin that would have
+worked.
+
+13.0 is the real floor and every surface now says it. It is what Flutter
+itself requires, and what `firebase_messaging`, `url_launcher_ios` and
+`shared_preferences_foundation` each declare. This plugin's own Swift needs
+iOS 10, using `CXCallObserver` and nothing newer. The 15.0 was the **native
+iOS SDK's** floor copied across; that SDK does require 15, and this plugin
+does not depend on it, which is also why the `create()` and `list()` crash in
+iOS SDK 0.3.0 and 0.3.1 never reached Flutter apps.
+
+Nothing is tightened, so nothing breaks: this widens the devices the plugin is
+documented to support.
+
+### The iOS podspec was unedited flutter create boilerplate
+
+It read "A new Flutter plugin project", homepage `http://example.com`, author
+"Your Company" at `email@example.com`, and version `0.0.1` against a package
+at 0.3.1. That is what a CocoaPods consumer reads and what `pod lib lint`
+reports. It now describes the plugin, points at relavoi.com, and names the
+Apache-2.0 licence added in 0.3.1.
+
+### A release cannot disagree with its own tag
+
+`scripts/check-release-version.sh` runs on a tag push and fails the release
+unless `pubspec.yaml`, the podspec version, the README install ref and the
+newest CHANGELOG section all name the tag being cut, and unless the iOS floor
+reads the same in the podspec, `Package.swift` and the README.
+
+The iOS SDK has the same check after its 0.3.2 tag had to be force-moved,
+which SwiftPM then refused to resolve because it had cached the old revision.
+This one also covers the podspec version, because that is the field which sat
+at 0.0.1 and which no other check would have caught.
+
 ## 0.3.1
 
 ### Apache License 2.0

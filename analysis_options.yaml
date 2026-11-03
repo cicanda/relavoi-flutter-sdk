@@ -3,6 +3,12 @@ analyzer:
     - build/**
     - android/**
     - ios/**
+    # The doc-sample prelude. These files are fragments of a host app, named
+    # after the single symbol each one declares so the harness can leave one
+    # out when a sample declares it itself, and they are compiled inside a
+    # generated package with its own rules. Holding them to this package's
+    # lint rules only produces file_names complaints about that naming.
+    - scripts/doc-samples/**
 include: package:flutter_lints/flutter.yaml
 
 # Additional information about this file can be found at

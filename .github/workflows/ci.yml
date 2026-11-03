@@ -51,6 +51,21 @@ jobs:
         # day we decide to publish.
         run: flutter pub publish --dry-run
 
+      - name: README dart samples analyze
+        # Every ```dart fence in the README is analyzed against this working
+        # tree, in a generated package that depends on it by path. A sample an
+        # integrator could not compile fails the build.
+        #
+        # The fence annotations are what make this possible: a reference
+        # listing and a two-line snippet cannot be analyzed the same way as a
+        # whole file. They are documented in scripts/doc-samples/README.md.
+        #
+        # The docs site's Flutter pages hold most of the samples and are not in
+        # this repository. relavoi-docs runs this same script over them on a
+        # schedule, with this package checked out at its released tag, because
+        # that is the version a reader of the docs is using.
+        run: python3 scripts/check-doc-samples.py README.md
+
   release-version:
     # Only on a tag. Fails the release unless pubspec, the podspec, the README
     # install ref and the newest CHANGELOG section all name the tag being cut,

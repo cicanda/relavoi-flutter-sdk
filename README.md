@@ -26,7 +26,7 @@ secret never reaches the handset, because anything compiled into a published
 app can be read back out of it, and a live key and secret let anyone create
 sessions billed to you and list every session and call on your workspace.
 
-```dart
+```dart fragment
 import 'package:relavoi_flutter/relavoi_flutter.dart';
 
 // Initialize once at app startup

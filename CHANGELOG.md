@@ -1,3 +1,42 @@
+## 0.3.3
+
+### `NumberQuotaReachedException`
+
+The API refuses a session when the workspace is holding every proxy number its
+plan allows at once and each of them is already in a live session with one of
+the two people being connected. That refusal used to arrive as a `429` and be
+surfaced here as `TierLimitException`, which was wrong in the way that matters:
+a caller handling a rate limit waits and retries, and this condition does not
+clear by waiting. It clears when one of the workspace's sessions ends, or when
+a request for more numbers is approved.
+
+So it is now `NumberQuotaReachedException`, and the API answers it with a
+`409`.
+
+This is a patch rather than a minor, unlike the same change in the iOS and
+Android SDKs. There it is source-breaking: `RelavoiError` is a Swift enum and
+`RelavoiException` a Kotlin sealed class, so an exhaustive `switch` or `when`
+over either stops compiling when a case is added. Dart has no exhaustiveness
+over a plain class hierarchy, so existing `on RelavoiException` and
+`on TierLimitException` clauses keep compiling and keep behaving as they did.
+
+An app that wants to tell the two apart adds a clause:
+
+```dart
+on NumberQuotaReachedException catch (e) {
+  // ask for more numbers; do not retry on a timer
+}
+```
+
+### The slug decides, not the status
+
+`ApiClient` matches the problem document's `type` slug before it looks at the
+status code, so `number-quota-reached` maps to the new type whether it arrives
+as a `409` or as the `429` an older deployment sends. An SDK that keyed on the
+status would have called it a rate limit for as long as the two sides were out
+of step, which is exactly the window a release creates. There are tests for
+both statuses, and one that a plain `429` is still `TierLimitException`.
+
 ## 0.3.2
 
 ### One iOS floor, and it is 13.0

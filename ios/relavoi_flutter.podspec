@@ -5,7 +5,7 @@
 Pod::Spec.new do |s|
   s.name             = 'relavoi_flutter'
   # Keep in step with `version:` in ../pubspec.yaml.
-  s.version          = '0.3.2'
+  s.version          = '0.3.3'
   s.summary          = 'Privacy-preserving call and SMS masking for Flutter apps.'
   s.description      = <<-DESC
 The iOS side of the Relavoi Flutter plugin. Native call detection for the

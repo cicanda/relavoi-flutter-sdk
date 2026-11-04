@@ -120,6 +120,16 @@ class ApiClient {
     final detail = problem?['detail'];
     final slug = problem?['slug'];
 
+    // Before the status is looked at. The quota refusal was answered with a
+    // 429 and is now a 409, and it must not be read as a rate limit under
+    // either: a rate limit says wait, and this one does not clear by waiting.
+    // Keying on the status would have mislabelled it for as long as the two
+    // sides were out of step, which is the window every release creates.
+    if (slug == 'number-quota-reached') {
+      return NumberQuotaReachedException(detail ??
+          'This workspace is holding every proxy number its plan allows at once.');
+    }
+
     if (status == 400 || status == 422) {
       if (slug == 'number-not-supported') {
         return NumberNotSupportedException(

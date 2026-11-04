@@ -13,7 +13,7 @@ dependencies:
   relavoi_flutter:
     git:
       url: https://github.com/cicanda/relavoi-flutter-sdk.git
-      ref: v0.3.2
+      ref: v0.3.3
 ```
 
 ## Quick Start

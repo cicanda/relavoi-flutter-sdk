@@ -55,6 +55,32 @@ void main() {
     expect(e.message, contains('same country'));
   });
 
+  test('maps number-quota-reached to NumberQuotaReachedException on 409', () {
+    final e = client.mapErrorForTest(responseError(
+        409,
+        problem('number-quota-reached',
+            'This workspace is holding all 1 of its 1 proxy numbers.')));
+    expect(e, isA<NumberQuotaReachedException>());
+    expect(e.message, contains('proxy numbers'));
+  });
+
+  test('number-quota-reached is not a rate limit even on 429', () {
+    // It was answered with a 429 before the status was changed to 409. An SDK
+    // keyed on the status would have called it a rate limit, and a caller
+    // handling TierLimitException retries. The slug decides, so an old backend
+    // and a new one both read correctly.
+    final e = client.mapErrorForTest(
+        responseError(429, problem('number-quota-reached', 'At the limit.')));
+    expect(e, isA<NumberQuotaReachedException>());
+    expect(e, isNot(isA<TierLimitException>()));
+  });
+
+  test('a plain 429 is still a TierLimitException', () {
+    final e = client.mapErrorForTest(
+        responseError(429, problem('rate-limit', 'Slow down.')));
+    expect(e, isA<TierLimitException>());
+  });
+
   test('maps any other 422 to ValidationException', () {
     final e = client.mapErrorForTest(
         responseError(422, problem('validation', 'agentPhone is not valid.')));

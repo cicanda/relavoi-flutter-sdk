@@ -17,7 +17,7 @@ class VerificationManager {
   /// Returns verified=true if the current call matches an active masking session.
   ///
   /// ```dart
-  /// final result = await Relavoi.instance.verification.verify('+2348012345678');
+  /// final result = await Relavoi.instance.verification.verify('+2349000000001');
   /// if (result.verified) {
   ///   showBanner('Your driver is calling', color: Colors.green);
   /// }

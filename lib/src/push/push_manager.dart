@@ -14,7 +14,7 @@ class PushManager {
   /// which device to send push notifications to for incoming calls.
   ///
   /// ```dart
-  /// await Relavoi.instance.push.registerToken('+2348012345678');
+  /// await Relavoi.instance.push.registerToken('+2349000000001');
   /// ```
   Future<void> registerToken(String userPhone) async {
     try {

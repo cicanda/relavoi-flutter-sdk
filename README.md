@@ -39,8 +39,8 @@ await Relavoi.initialize(
 
 // Create a masking session when an order is assigned
 final session = await Relavoi.instance.sessions.create(
-  agentPhone: '+2348012345678',
-  customerPhone: '+2348087654321',
+  agentPhone: '+2349000000001',
+  customerPhone: '+2349000000002',
   metadata: {'orderId': 'ORD-123', 'type': 'delivery'},
 );
 
@@ -48,7 +48,7 @@ final session = await Relavoi.instance.sessions.create(
 await Relavoi.instance.sessions.initiateCall(session.proxyNumber);
 
 // Check if incoming call is verified
-final result = await Relavoi.instance.verification.verify('+2348012345678');
+final result = await Relavoi.instance.verification.verify('+2349000000001');
 if (result.verified) {
   // Show green "Verified call" banner
 }

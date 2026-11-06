@@ -7,7 +7,7 @@ void main() {
       final json = {
         'id': 'sess-1',
         'tenantId': 'tenant-1',
-        'proxyNumber': '+2342017001428',
+        'proxyNumber': '+2349000000100',
         'state': 'ACTIVE',
         'directionMode': 'BIDIRECTIONAL',
         'metadata': {'orderId': 'ORD-1'},
@@ -26,7 +26,7 @@ void main() {
       final s = Session.fromJson(json);
       expect(s.id, 'sess-1');
       expect(s.tenantId, 'tenant-1');
-      expect(s.proxyNumber, '+2342017001428');
+      expect(s.proxyNumber, '+2349000000100');
       expect(s.state, SessionState.active);
       expect(s.directionMode, DirectionMode.bidirectional);
       expect(s.metadata?['orderId'], 'ORD-1');

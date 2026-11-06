@@ -14,8 +14,8 @@ class SessionManager {
   ///
   /// ```dart
   /// final session = await Relavoi.instance.sessions.create(
-  ///   agentPhone: '+2348012345678',
-  ///   customerPhone: '+2348087654321',
+  ///   agentPhone: '+2349000000001',
+  ///   customerPhone: '+2349000000002',
   ///   metadata: {'orderId': 'ORD-123'},
   /// );
   /// print('Proxy: ${session.proxyNumber}');

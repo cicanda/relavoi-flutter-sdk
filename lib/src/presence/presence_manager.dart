@@ -18,7 +18,7 @@ class PresenceManager with WidgetsBindingObserver {
   /// based on the app's lifecycle. Call this once after initialization.
   ///
   /// ```dart
-  /// Relavoi.instance.presence.start('+2348012345678');
+  /// Relavoi.instance.presence.start('+2349000000001');
   /// ```
   void start(String userPhone) {
     _userPhone = userPhone;

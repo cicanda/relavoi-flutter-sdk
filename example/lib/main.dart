@@ -26,12 +26,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // Credentials are NOT hardcoded, paste the test workspace's key/secret here
-  // at runtime. Tenant ID is not a secret, so it is pre-filled.
+  // Nothing identifying is hardcoded. The key, the secret and the workspace id
+  // are all pasted in at runtime. The workspace id is not a secret, but it is
+  // ours and this repository is public, so it is not pre-filled either. See
+  // example/README.md for where to get it.
   final _apiKey = TextEditingController();
   final _apiSecret = TextEditingController();
-  final _tenantId =
-      TextEditingController(text: 'f656ac1b-3b5d-4af0-8ff1-c4cbc1076144');
+  final _tenantId = TextEditingController();
   final _agentPhone = TextEditingController(text: '+2349000000001');
   final _customerPhone = TextEditingController(text: '+2349000000002');
   final _userPhone = TextEditingController(text: '+2349000000001');

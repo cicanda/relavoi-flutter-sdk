@@ -3,16 +3,27 @@
 Developer test harness for the Relavoi Flutter SDK. Buttons that each exercise one
 SDK feature against the live backend (`https://api.relavoi.com/v1`).
 
-## Configure credentials
+## Credentials: use a workspace of your own
 
-Credentials are **not** hardcoded. Launch the app and paste the shared **test
-workspace's** API key, secret and workspace id into the "API Key", "API Secret"
-and "Tenant ID" fields at the top, then tap **Initialize SDK**. The test phone
-numbers are pre-filled.
+This harness does not ship with a workspace, and the keys to ours are not
+shared. A sandbox key is free and takes about a minute, and it means the
+sessions you create while trying the SDK are yours rather than mixed into
+somebody else's test data.
 
-The workspace id is not a secret, but it is ours and this repository is public,
-so it is not pre-filled. It is shared out of band with the key and secret, and the dashboard
-shows it beside the ready-made snippets on its API keys page.
+1. Sign up at <https://app.relavoi.com/signup>.
+2. Open **API & Keys** in the dashboard and press **Generate sandbox keys**.
+   The key and the secret are shown once, when they are generated, so copy
+   both before leaving the page. Regenerating invalidates the previous pair.
+3. The workspace id is on that same page, inside the ready-made SDK snippets.
+
+Sandbox keys talk to the same backend as live ones and need no approval. What
+they will not do is place a real call: a sandbox session is routed and recorded
+exactly as a live one but never reaches the carrier, which is what makes it
+safe to run this harness against the numbers below.
+
+Nothing is hardcoded here. Launch the app and paste the key, the secret and the
+workspace id into the "API Key", "API Secret" and "Tenant ID" fields at the
+top, then tap **Initialize SDK**. The test phone numbers are pre-filled.
 
 ## Run
 

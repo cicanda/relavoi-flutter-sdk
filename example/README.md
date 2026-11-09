@@ -5,8 +5,8 @@ SDK feature against the live backend (`https://api.relavoi.com/v1`).
 
 ## Configure credentials
 
-Credentials are **not** hardcoded. Launch the app and paste the **Bolt Nigeria
-test** API key and secret (shared out-of-band) into the "API Key" / "API Secret"
+Credentials are **not** hardcoded. Launch the app and paste the shared **test
+workspace's** API key and secret (shared out-of-band) into the "API Key" / "API Secret"
 fields at the top, then tap **Initialize SDK**. The tenant ID
 (`f656ac1b-3b5d-4af0-8ff1-c4cbc1076144`) and test phone numbers are pre-filled.
 

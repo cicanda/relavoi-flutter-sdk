@@ -26,7 +26,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // Credentials are NOT hardcoded — paste the Bolt Nigeria test key/secret here
+  // Credentials are NOT hardcoded, paste the test workspace's key/secret here
   // at runtime. Tenant ID is not a secret, so it is pre-filled.
   final _apiKey = TextEditingController();
   final _apiSecret = TextEditingController();
